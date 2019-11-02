@@ -1,0 +1,146 @@
+
+{% extends "base.html" %}
+{% load staticfiles %}
+
+<!-- 写入 base.html 中定义的 title -->
+{% block title %}
+    首页
+{% endblock title %}
+
+{% block addstyle %}
+#art_style a {
+    text-decoration: none;
+}
+{% endblock addstyle %}
+
+<!-- 写入 base.html 中定义的 content -->
+{% block content %}
+<!-- 定义放置文章标题的div容器 -->
+<div class="container">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" id='bc'>
+            <li class="breadcrumb-item" id="latest_art" onclick="breaditem_show('latest_art')">
+                <a href="{% url 'article:article_list' %}?search={{ search }}&column={{ column }}&tag={{ tag }}">最新</a>
+            </li>
+            <li class="breadcrumb-item" id="hot_art" onclick="breaditem_show('hot_art')">
+                <a href="{% url 'article:article_list' %}?order=total_views&search={{ search }}&column={{ column }}&tag={{ tag }}">热门</a>
+            </li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-auto mr-auto">
+            <form class="form-inline">
+                <label class="sr-only">content</label>
+                <input type="text"
+                    class="form-control mb-2 mr-sm-2"
+                    name="search"
+                    placeholder="搜索文章"
+                    required
+                    >
+            </form>
+        </div>
+    </div>
+
+    {% if search %}
+        {% if articles %}
+            <h4><span style="color: red">"{{ search }}"</span>的搜索结果如下：</h4>
+            <hr>
+        {% else %}
+            <h4>暂无<span style="color: red">"{{ search }}"</span>有关的文章。</h4>
+            <hr>
+        {% endif %}
+    {% endif %}
+    <!-- 文章内容 -->
+    {% for article in articles %}
+    <div class="row mt-2">
+        <!-- NOTE: image of title -->
+        {% if article.avatar %}
+            <div class="col3">
+                <img src="{{ article.avatar.url }}" alt="avatar"
+                    style="max-width:100%; border-radius: 20px;">
+            </div>
+        {% endif %}
+        <div class="col" id="art_style">
+            {% if article.column %}
+                <a type="button"
+                    href="{% url 'article:article_list' %}?order={{ order }}&search={{ search }}&column={{ article.column_id }}&tag={{ tag }}"
+                    class="btn btn-sm mb-2
+                        {% if article.column.title == 'Django' %}
+                            btn-success
+                        {% elif article.column.title == 'Python' %}
+                           btn-danger
+                        {% elif article.column.title == 'HTML' %}
+                           btn-warning
+                        {% endif %}
+                        "
+                >{{ article.column }}</a>
+            {% endif %}
+            <!-- tags -->
+            <span>
+                {% for tag in article.tags.all %}
+                    <a href="/article/?order={{ order }}&search={{ search }}&column={{ column }}&tag={{ tag }}" class="badge badge-secondary">{{ tag }}</a>
+                {% endfor %}
+            </span>
+            <!-- 标题 -->
+            <h4>
+                <b>
+                    <a href="{% url 'article:article_detail' article.id %}"
+                        style="color: black;"
+                    >{{ article.title }}</a>
+                </b>
+            </h4>
+            <!-- 摘要 -->
+            <div>
+                <p style="color: gray;">
+                    {{ article.body|slice:'100' }}...
+                </p>
+            </div>
+            <!-- 注脚 -->
+            <p>
+                <span style="color: blue;">
+                    {{ article.created|date:'Y-m-d'}}发布&nbsp;&nbsp;&nbsp;
+                </span>
+                <span style="color: darkred;">
+                    {{ article.updated|date:'Y-m-d' }}更新&nbsp;&nbsp;&nbsp;
+                </span>
+                <span style="color: green;">
+                    {{ article.total_views }}浏览
+                </span>
+            </p>
+        </div>
+    </div>
+    <hr style="width=100%;">
+    {% endfor %}
+
+    <div class="pagination row">
+        <div class="m-auto">
+            <span class="step-links">
+                {% if articles.has_previous %}
+                    <a href="?page=1&order={{ order }}&search={{ search }}&column={{ column }}&tag={{ tag }}" class="btn btn-primary">&laquo; 1</a>
+                    {% if articles.previous_page_number != 1 %}
+                    <span>...</span>
+                    <a href="?page={{ articles.previous_page_number }}&order={{ order }}&search={{ search }}&column={{ column }}&tag={{ tag }}" class="btn btn-secondary">
+                        {{ articles.previous_page_number }}
+                    </a>
+                    {% endif %}
+                {% endif %}
+                <span class="current btn btn-info btn-lg">{{ articles.number }}</span>
+                {% if articles.has_next %}
+                    <a href="?page={{ articles.next_page_number }}&order={{ order }}&search={{ search }}&column={{ column }}&tag={{ tag }}" class="btn btn-secondary">
+                        {{ articles.next_page_number }}
+                    </a>
+                    {% if articles.paginator.num_pages != articles.next_page_number %}
+                        <span>...</span>
+                        <a href="?page={{ articles.paginator.num_pages }}&order={{ order }}&search={{ search }}&column={{ column }}&tag={{ tag }}" class="btn btn-primary">
+                            &raquo; {{ articles.paginator.num_pages }}
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </span>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}
