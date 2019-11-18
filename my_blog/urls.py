@@ -18,8 +18,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from article.views import article_list
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', article_list),
     path('article/', include('article.urls', namespace='article')),
     path('userprofile/', include('userprofile.urls', namespace='userprofile')),
     path('password_reset/', include('password_reset.urls')),

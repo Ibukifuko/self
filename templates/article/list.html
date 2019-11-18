@@ -16,32 +16,29 @@
 <!-- 写入 base.html 中定义的 content -->
 {% block content %}
 <!-- 定义放置文章标题的div容器 -->
-<div class="container">
+<div class="container mt-5">
 
     <nav aria-label="breadcrumb">
-        <ol class="breadcrumb" id='bc'>
-            <li class="breadcrumb-item" id="latest_art" onclick="breaditem_show('latest_art')">
+        <ol class="breadcrumb mt-3 d-inline-flax" id='bc'>
+            <li class="breadcrumb-item mt-3" id="latest_art" onclick="breaditem_show('latest_art')">
                 <a href="{% url 'article:article_list' %}?search={{ search }}&column={{ column }}&tag={{ tag }}">最新</a>
             </li>
-            <li class="breadcrumb-item" id="hot_art" onclick="breaditem_show('hot_art')">
+            <li class="breadcrumb-item mt-3" id="hot_art" onclick="breaditem_show('hot_art')">
                 <a href="{% url 'article:article_list' %}?order=total_views&search={{ search }}&column={{ column }}&tag={{ tag }}">热门</a>
+            </li>
+            <li class="ml-auto mt-2">
+                <form class="form-inline">
+                    <label class="sr-only">content</label>
+                    <input type="text"
+                        class="form-control mb-2 mr-sm-2"
+                        name="search"
+                        placeholder="搜索文章"
+                        required
+                        >
+                </form>
             </li>
         </ol>
     </nav>
-
-    <div class="row">
-        <div class="col-auto mr-auto">
-            <form class="form-inline">
-                <label class="sr-only">content</label>
-                <input type="text"
-                    class="form-control mb-2 mr-sm-2"
-                    name="search"
-                    placeholder="搜索文章"
-                    required
-                    >
-            </form>
-        </div>
-    </div>
 
     {% if search %}
         {% if articles %}
