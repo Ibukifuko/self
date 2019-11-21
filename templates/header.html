@@ -9,10 +9,11 @@
       <div>
         <ul class="navbar-nav">
           <!-- 条目 -->
-
+          {% if user.is_superuser %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'article:article_create' %}">随笔</a>
           </li>
+          {% endif %}
           <li class="nav-item">
             <a class="nav-link" href="/article/">文章</a>
           </li>

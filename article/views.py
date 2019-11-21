@@ -45,7 +45,6 @@ def article_list(request):
     else:
         search = ''
 
-    print(column)
     if column is not None and column.isdigit():
         article_list = article_list.filter(column=column)
 
@@ -55,9 +54,17 @@ def article_list(request):
     if order == 'total_views':
         article_list = article_list.order_by('-total_views')
 
-    paginator = Paginator(article_list, 3)
+    paginator = Paginator(article_list, 10)
     page = request.GET.get('page')
     articles = paginator.get_page(page)
+
+    md = markdown.Markdown(
+        extensions=[
+            'markdown.extensions.extra',
+            'markdown.extensions.toc',
+        ])
+    for art in articles:
+        art.body = md.convert(art.body)
 
     context = {
         'articles': articles,
@@ -87,6 +94,8 @@ def article_detail(request, id):
 
 @login_required(login_url='/userprofile/login/')
 def article_create(request):
+    if not request.user.is_superuser:
+        return HttpResponse("无权限")
     if request.method == 'POST':
         article_post_form = ArticlePostForm(request.POST, request.FILES)
         if article_post_form.is_valid():

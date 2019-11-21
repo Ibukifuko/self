@@ -36,8 +36,12 @@ def user_register(request):
     if request.method == 'POST':
         user_register_form = UserRegisterForm(data=request.POST)
         if user_register_form.is_valid():
-            new_user = user_register_form.save(commit=False)
+            em = user_register_form.cleaned_data['email']
+            if User.objects.get(email = em):
+                context = {'form': user_register_form, 'err_info': '邮箱以被注册'}
+                return render(request, 'userprofile/register.html', context)
 
+            new_user = user_register_form.save(commit=False)
             new_user.set_password(user_register_form.cleaned_data['password'])
             new_user.save()
 
@@ -47,7 +51,7 @@ def user_register(request):
             return HttpResponse("注册表单输入有误,请重新输入.")
     elif request.method == 'GET':
         user_register_form = UserRegisterForm()
-        context = {'form': user_register_form}
+        context = {'form': user_register_form, 'err_info': ''}
         return render(request, 'userprofile/register.html', context)
     else:
         return HttpResponse("请使用GET或POST请求数据")
@@ -73,11 +77,11 @@ def profile_edit(request, id):
         profile = Profile.objects.get(user_id=id)
     else:
         profile = Profile.objects.create(user=user)
-        
+
     if request.method == 'POST':
         if request.user != user:
             return HttpResponse("你没有权限修改此用户信息。")
-        
+
         profile_form = ProfileForm(request.POST, request.FILES)
         if profile_form.is_valid():
             profile_cd = profile_form.cleaned_data
@@ -90,7 +94,7 @@ def profile_edit(request, id):
             return redirect("userprofile:edit", id=id)
         else:
             return HttpResponse("输入有误,请重新输入.")
-    
+
     elif request.method == 'GET':
         profile_form = ProfileForm()
         context = {'profile_form': profile_form, 'profile':profile, 'user': user}

@@ -11,15 +11,19 @@
 #art_style a {
     text-decoration: none;
 }
+#abstract p {
+    font-style: normal;
+    font-size: 15px;
+}
 {% endblock addstyle %}
 
 <!-- 写入 base.html 中定义的 content -->
 {% block content %}
 <!-- 定义放置文章标题的div容器 -->
-<div class="container mt-5">
+<div class="container">
 
     <nav aria-label="breadcrumb">
-        <ol class="breadcrumb mt-3 d-inline-flax" id='bc'>
+        <ol class="breadcrumb d-inline-flax" id='bc'>
             <li class="breadcrumb-item mt-3" id="latest_art" onclick="breaditem_show('latest_art')">
                 <a href="{% url 'article:article_list' %}?search={{ search }}&column={{ column }}&tag={{ tag }}">最新</a>
             </li>
@@ -59,7 +63,7 @@
                     style="max-width:100%; border-radius: 20px;">
             </div>
         {% endif %}
-        <div class="col" id="art_style">
+        <div class="col-12" id="art_style">
             {% if article.column %}
                 <a type="button"
                     href="{% url 'article:article_list' %}?order={{ order }}&search={{ search }}&column={{ article.column_id }}&tag={{ tag }}"
@@ -89,9 +93,9 @@
                 </b>
             </h4>
             <!-- 摘要 -->
-            <div>
+            <div id='abstract'>
                 <p style="color: gray;">
-                    {{ article.body|slice:'100' }}...
+                    {{ article.body|safe|slice:'100' }}...
                 </p>
             </div>
             <!-- 注脚 -->
