@@ -9,7 +9,7 @@
       <div>
         <ul class="navbar-nav">
           <!-- 条目 -->
-          {% if user.is_superuser %}
+          {% if user.is_staff %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'article:article_create' %}">随笔</a>
           </li>
